@@ -1,6 +1,4 @@
 import MoneyInput from "@/components/MoneyInput";
-import { createClient } from "@/utils/supabase/server";
-import { addition, encrypt, decrypt } from "@/utils/algorithm/paillier";
 import { donate } from "@/app/donations/[id]/actions";
 
 export default async function Donate({ id }: { id: string }) {

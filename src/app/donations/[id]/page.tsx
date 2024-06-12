@@ -13,7 +13,13 @@ import { addition, encrypt, decrypt } from "@/utils/algorithm/paillier";
 import { formatToRupiah, formatTime } from "@/utils/format";
 import Donate from "@/components/Donate";
 
-export default async function Donation({ params }: { params: { id: string } }) {
+export default async function Donation({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { error: string };
+}) {
   const supabase = createClient();
 
   const {
@@ -82,6 +88,11 @@ export default async function Donation({ params }: { params: { id: string } }) {
               </p>
             </div>
             <Donate id={params.id} />
+            {searchParams.error && (
+              <div className="text-red-500 text-sm mb-4">
+                {searchParams.error}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col">
