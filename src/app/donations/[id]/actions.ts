@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { addition, encrypt, decrypt } from "@/utils/algorithm/paillier";
+import { encrypt } from "@/utils/algorithm/paillier";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
