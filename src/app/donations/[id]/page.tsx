@@ -11,9 +11,14 @@ import {
 import { createClient } from "@/utils/supabase/server";
 import { addition, encrypt, decrypt } from "@/utils/algorithm/paillier";
 import { formatToRupiah, formatTime } from "@/utils/format";
+import Donate from "@/components/Donate";
 
 export default async function Donation({ params }: { params: { id: string } }) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: campaign } = await supabase
     .from("campaigns")
@@ -71,53 +76,74 @@ export default async function Donation({ params }: { params: { id: string } }) {
               <p className="text-indigo-500 text-2xl font-bold">
                 {formatToRupiah(Number(decTotalDonation))}
               </p>
-              <p className="text-md md:text-lg leading-4">of</p>
+              <p className="text-md md:text-lg leading-4">dari</p>
               <p className="text-indigo-500 text-2xl font-bold">
                 {formatToRupiah(campaign?.goal_amount ?? 0)}
               </p>
             </div>
-            <div className="flex items-center gap-2 h-10 mt-2">
-              <div className="w-[60%] h-full">
-                <MoneyInput />
-              </div>
-              <button className="w-[40%] bg-indigo-500 text-white rounded-sm h-full text-md">
-                Donate
-              </button>
-            </div>
+            <Donate id={params.id} />
           </div>
         </div>
         <div className="flex flex-col">
-          <h1 className="font-bold text-xl mb-1 ml-2">History (5 latest)</h1>
+          <h1
+            className={`${
+              donations &&
+              donations.filter((donation) => donation.donor_id === user?.id)
+                .length > 0
+                ? "ml-2"
+                : ""
+            } font-bold text-xl mb-1`}
+          >
+            Donasimu (5 terakhir):
+          </h1>
           <div className="w-full md:w-[58%]">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-end">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {donations &&
-                  donations.slice(0, 5).map((donation) => (
-                    <TableRow key={donation.donation_id}>
-                      <TableCell>
-                        {formatTime(donation.created_at ?? "")}
-                      </TableCell>
-                      <TableCell className="text-end">
-                        {formatToRupiah(
-                          Number(
-                            decrypt(
-                              publicKey,
-                              privateKey,
-                              BigInt(donation.encrypted_amount ?? "0")
+            {donations &&
+            donations.filter((donation) => donation.donor_id === user?.id)
+              .length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead className="text-end">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {donations
+                    .filter((donation) => donation.donor_id === user?.id)
+                    .slice(0, 5)
+                    .map((donation) => (
+                      <TableRow key={donation.donation_id}>
+                        <TableCell>
+                          {formatTime(donation.created_at ?? "")}
+                        </TableCell>
+                        <TableCell className="text-end">
+                          {formatToRupiah(
+                            Number(
+                              decrypt(
+                                publicKey,
+                                privateKey,
+                                BigInt(donation.encrypted_amount ?? "0")
+                              )
                             )
-                          )
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div
+                className={`${
+                  donations &&
+                  donations.filter((donation) => donation.donor_id === user?.id)
+                    .length > 0
+                    ? "ml-2"
+                    : ""
+                }`}
+              >
+                Belum ada nih, yuk donasi!
+              </div>
+            )}
           </div>
         </div>
       </div>

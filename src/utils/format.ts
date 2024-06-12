@@ -15,17 +15,12 @@ export function formatToRupiah(number: number): string {
 export function formatTime(dateTime: string): string {
   const formattedDateTime = new Date(dateTime);
 
-  formattedDateTime.setHours(21);
-  formattedDateTime.setMinutes(40);
-  formattedDateTime.setSeconds(49);
+  const year = formattedDateTime.getFullYear();
+  const month = String(formattedDateTime.getMonth() + 1).padStart(2, "0");
+  const day = String(formattedDateTime.getDate()).padStart(2, "0");
+  const hours = String(formattedDateTime.getHours() + 7).padStart(2, "0");
+  const minutes = String(formattedDateTime.getMinutes()).padStart(2, "0");
+  const seconds = String(formattedDateTime.getSeconds()).padStart(2, "0");
 
-  return (
-    formattedDateTime.toISOString().split("T")[0] +
-    " " +
-    String(formattedDateTime.getHours()).padStart(2, "0") +
-    ":" +
-    String(formattedDateTime.getMinutes()).padStart(2, "0") +
-    ":" +
-    String(formattedDateTime.getSeconds()).padStart(2, "0")
-  );
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
